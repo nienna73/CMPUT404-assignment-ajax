@@ -74,11 +74,10 @@ def flask_post_json():
 @app.route("/")
 def hello():
     '''Return something coherent here.. perhaps redirect to /static/index.html '''
-    return 'ok'
+    return app.send_static_file('index.html')
 
 @app.route("/entity/<entity>", methods=['POST','PUT'])
 def update(entity):
-    print(myWorld.get(entity))
     '''update the entities via this interface'''
     vals = flask_post_json()
     return myWorld.set(entity, vals)
