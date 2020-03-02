@@ -24,16 +24,20 @@
   </head> 
   <body height="100%" width="100%" id="body" style="background-color: black;">
     <input type="button" value="Light Mode" onclick="toggleMode()" id="toggle">
+
     <input type="button" onclick="changeColor('firebrick')" style="background-color: firebrick;">
     <input type="button" onclick="changeColor('orange')" style="background-color: orange;">
     <input type="button" onclick="changeColor('gold')" style="background-color: gold;">
     <input type="button" onclick="changeColor('green')" style="background-color: green;">
     <input type="button" onclick="changeColor('aqua')" style="background-color: aqua;">
     <input type="button" onclick="changeColor('indigo')" style="background-color: indigo;">
-    <input type="button" onclick="changeColor('blueviolet')" style="background-color: blueviolet;">
+    <input type="button" onclick="changeColor('purple')" style="background-color: purple;">
+
+
+    <input type="button" onclick="clearBoard()" value="Clear" style="float: right;">
     
 
-    <canvas id="c" width="100%" height=device-height; style="background-color: 'black'"></canvas> 
+    <canvas id="c" width=device-width height=device-height style="background-color: 'black'"></canvas> 
     <script>
 var canvas = document.getElementById('c');
 var host = window.location.host;
@@ -67,6 +71,14 @@ function toggleMode() {
 
 function changeColor(color) {
     penColor = color;
+}
+
+function clearBoard() {
+    let yes = confirm("Clearing the board will clear it for all active participants.\n" + 
+                        "Are you sure you would like to clear the board?");
+    if (yes) {
+        sendJSONXMLHTTPRequest('/clear', {}, null);
+    }
 }
 
 
