@@ -23,8 +23,11 @@
     <script src="json2.js"></script>
   </head> 
   <body height="100%" width="100%" id="body" style="background-color: black;">
+    <div style="background-color: lightgray; height: 35pt; margin-left: 10pt;">
+    <p style="font-family: Arial, Helvetica, sans-serif; font-size: 10pt;">
+        Background Color &emsp;Pen Color &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &nbsp;Pen Size<br>
     <input type="button" value="Light Mode" onclick="toggleMode()" id="toggle">
-
+    &emsp;&emsp;
     <input type="button" onclick="changeColor('firebrick')" style="background-color: firebrick;">
     <input type="button" onclick="changeColor('orange')" style="background-color: orange;">
     <input type="button" onclick="changeColor('gold')" style="background-color: gold;">
@@ -33,8 +36,13 @@
     <input type="button" onclick="changeColor('indigo')" style="background-color: indigo;">
     <input type="button" onclick="changeColor('purple')" style="background-color: purple;">
 
+    &emsp;
+    <input type="range" min="1" max="50" value="25" class="slider" id="penSize" style="height: 15pt; background: lightgray;">
 
-    <input type="button" onclick="clearBoard()" value="Clear" style="float: right;">
+
+    <input type="button" onclick="clearBoard()" value="Clear" style="float: right; margin-right: 10pt; font-size: 14pt;">
+    </p>
+    </div>
     
 
     <canvas id="c" width=device-width height=device-height style="background-color: 'black'"></canvas> 
@@ -46,6 +54,12 @@ var W = canvas.width  = window.innerWidth-6;
 var H = canvas.height = window.innerHeight-50;
 var bg = "black"
 var penColor = "green"
+let penSizeSlider = document.getElementById('penSize');
+var penSize = penSizeSlider.value;
+
+penSizeSlider.oninput = function () {
+    penSize = this.value;
+}
 
 
 function toggleMode() {
@@ -118,11 +132,12 @@ function drawCircle(context,entity) {
         lineWidth = 5;
         var x = entity["x"];
         var y = entity["y"];
-        //moveTo(x,y);
+        // moveTo(x,y);
         fillStyle = entity["colour"];
         strokeStyle = fillStyle;
         arc(x, y, entity["radius"] || 50, 0, 2.0 * Math.PI, false);  
-        stroke();                                
+        closePath();
+        fill();                                
     }
 }
 
@@ -200,10 +215,20 @@ function addEntity(entity, data) {
 }
 
 var counter = 0;
+// Using a random character reduces the odds of
+// one user overwriting the other's drawing from
+// 100% as it was initially implemented to 1/26
+var char = getRandomArbitrary(65, 91);
+console.log(char);
+var looped = false;
 function addEntityWithoutName(data) {
-    //var name = "X"+Math.floor((Math.random()*100)+1);
-    var name = "X"+(counter++);
+    var name = String.fromCharCode(char) + (counter++);
     addEntity(name,data);
+}
+
+function getRandomArbitrary(min, max) {
+    // Referencing: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
+    return Math.floor(Math.random() * (max - min) + min);
 }
 
 // canvas + mouse/touch is complicated 
@@ -303,7 +328,6 @@ mouse = (function() {
 })();
 
 // Add the application specific mouse listeners!
-//XXX: TODO Make these prettier!
 mouse.mousedowners.push(function(x,y,clicked,e) {
     addEntityWithoutName({'x':x,'y':y,'colour':'transparent'});
 });
@@ -314,12 +338,12 @@ mouse.mouseuppers.push(function(x,y,clicked,e) {
 
 mouse.mousedraggers.push(function(x,y,clicked,e) {
     addEntityWithoutName({'x':x,'y':y,'colour':penColor,
-                          'radius':2});
+                          'radius':penSize});
 });
 
 
 function update() {
-    //XXX: TODO Get the world from the webservice using a XMLHTTPRequest
+    // Get the world from the webservice using a XMLHTTPRequest
 
     sendJSONXMLHTTPRequest('/world', {}, function (data) {
         world = data;

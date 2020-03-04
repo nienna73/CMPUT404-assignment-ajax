@@ -41,18 +41,23 @@ class World:
         entry = self.space.get(entity,dict())
         entry[key] = value
         self.space[entity] = entry
+        return entry
 
     def set(self, entity, data):
         self.space[entity] = data
+        self.max = int(entity[1:])
+        return self.space[entity]
 
     def clear(self):
         self.space = dict()
+        return self.space
 
     def get(self, entity):
         return self.space.get(entity,dict())
     
     def world(self):
         return self.space
+            
 
 # you can test your webservice from the commandline
 # curl -v   -H "Content-Type: application/json" -X PUT http://127.0.0.1:5000/entity/X -d '{"x":1,"y":1}' 
@@ -80,22 +85,24 @@ def hello():
 def update(entity):
     '''update the entities via this interface'''
     vals = flask_post_json()
-    return myWorld.set(entity, vals)
+    return json.dumps(myWorld.set(entity, vals))
 
 @app.route("/world", methods=['POST','GET'])    
 def world():
     '''you should probably return the world here'''
-    return myWorld.world()
+    return json.dumps(myWorld.world())
 
 @app.route("/entity/<entity>")    
 def get_entity(entity):
     '''This is the GET version of the entity interface, return a representation of the entity'''
-    return myWorld.get(entity)
+    return json.dumps(myWorld.get(entity))
 
 @app.route("/clear", methods=['POST','GET'])
 def clear():
     '''Clear the world out!'''
-    return myWorld.clear()
+    return json.dumps(myWorld.clear())
+
+
 
 if __name__ == "__main__":
     app.run()
